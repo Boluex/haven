@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#153c32">
+  <meta name="description" content="A little space of your own. Create your Haven account or sign in.">
+  <title>{% block title %}Haven{% endblock %} · Haven</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  <script src="https://easyeasy-be-staging.up.railway.app/static/ee-pixel.js" data-campaign="ee_f50aaed44b524a38"></script>
+</head>
+<body>
+  <main class="shell">
+    <aside class="story" aria-label="Welcome to Haven">
+      <a class="brand" href="{{ url_for('index') }}" aria-label="Haven home"><span class="brand-icon" aria-hidden="true">h.</span> haven<span class="brand-dot">®</span></a>
+      <div class="story-copy">
+        <span class="eyebrow"><span class="little-line"></span> YOUR NEXT CHAPTER</span>
+        <h1>A little space.<br> A fresh <em>start.</em></h1>
+        <p>Good things begin with a simple hello.<br> Make yourself at home.</p>
+      </div>
+      <div class="art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="arch arch-back"></div><div class="arch arch-front"></div><div class="sun"></div><div class="art-caption">ROOM TO BEGIN.</div></div>
+      <div class="story-footer"><span>Simple. Personal. Yours.</span><span>EST. 2026</span></div>
+    </aside>
+    <section class="main-panel">
+      <header class="topbar"><span class="status-dot"></span> A GOOD PLACE TO START</header>
+      <div class="content">{% block content %}{% endblock %}</div>
+      <footer class="page-footer"><span>© 2026 Haven</span><span>Made for new beginnings.</span></footer>
+    </section>
+  </main>
+</body>
+</html>

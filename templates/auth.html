@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% set registering = mode == 'register' %}
+{% block title %}{{ 'Create an account' if registering else 'Log in' }}{% endblock %}
+{% block content %}
+<nav class="tabs" aria-label="Account access">
+  <a href="{{ url_for('login') }}" class="tab {{ 'active' if not registering }}" {% if not registering %}aria-current="page"{% endif %}>Log in</a>
+  <a href="{{ url_for('register') }}" class="tab {{ 'active' if registering }}" {% if registering %}aria-current="page"{% endif %}>Create an account</a>
+</nav>
+<div class="form-heading"><span class="kicker">{{ 'LET’S GET ACQUAINTED' if registering else 'YOUR SPACE IS WAITING' }}</span>
+  <h2>{{ 'Start something good.' if registering else 'Welcome back.' }}</h2>
+  <p>{{ 'A few details, and you’re right at home.' if registering else 'Come on in. We’re happy to see you again.' }}</p>
+</div>
+{% if error %}<div class="alert" role="alert">{{ error }}</div>{% endif %}
+<form method="post" class="auth-form">
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+  {% if registering %}
+  <div class="field"><label for="name">Your name</label><input id="name" name="name" placeholder="Alex Morgan" autocomplete="name" minlength="2" maxlength="80" value="{{ request.form.get('name', '') }}" required></div>
+  {% endif %}
+  <div class="field"><label for="email">Email address</label><input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" maxlength="254" value="{{ request.form.get('email', '') }}" required></div>
+  <div class="field"><label for="password">Password</label><div class="password-wrap"><input id="password" name="password" type="password" placeholder="{{ 'Create a password' if registering else 'Enter your password' }}" autocomplete="{{ 'new-password' if registering else 'current-password' }}" {% if registering %}minlength="8" aria-describedby="password-hint"{% endif %} maxlength="128" required><button class="reveal" type="button" data-toggle="password" aria-label="Show password" aria-pressed="false">Show</button></div>{% if registering %}<small id="password-hint">Make it yours. Use at least 8 characters.</small>{% endif %}</div>
+  {% if registering %}
+  <div class="field"><label for="confirm_password">Confirm password</label><div class="password-wrap"><input id="confirm_password" name="confirm_password" type="password" placeholder="One more time" autocomplete="new-password" minlength="8" maxlength="128" required><button class="reveal" type="button" data-toggle="confirm_password" aria-label="Show confirmation password" aria-pressed="false">Show</button></div></div>
+  {% endif %}
+  <button type="submit" class="button primary">{{ 'Create my account' if registering else 'Log in' }}<span aria-hidden="true">↗</span></button>
+</form>
+<p class="switch-copy">{{ 'Already feel at home?' if registering else 'New around here?' }} <a href="{{ url_for('login' if registering else 'register') }}">{{ 'Log in' if registering else 'Create an account' }}</a></p>
+<div class="form-note"><span aria-hidden="true">◇</span> Your own small corner of the internet.</div>
+{% endblock %}

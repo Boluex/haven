@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Logged out' if logged_out else 'It worked!' }}{% endblock %}
+{% block content %}
+<div class="result">
+  <div class="success-icon" aria-hidden="true">{{ '↗' if logged_out else '✓' }}</div>
+  <span class="kicker">{{ 'UNTIL NEXT TIME' if logged_out else 'YOU’RE RIGHT WHERE YOU BELONG' }}</span>
+  <h2>{{ 'You’re logged out.' if logged_out else 'It worked!' }}</h2>
+  {% if logged_out %}
+  <p>You’ve successfully logged out.<br>Your space will be here when you get back.</p>
+  <a class="button primary" href="{{ url_for('login') }}">Back to log in <span aria-hidden="true">↗</span></a>
+  <p class="switch-copy">A fresh start? <a href="{{ url_for('register') }}">Create an account</a></p>
+  {% else %}
+  <p>{{ 'Your account is ready' if session.get('registered') else 'You’ve successfully logged in' }}, {{ g.user.name }}.<br>Welcome to your little corner of Haven.</p>
+  <div class="account-card"><div class="avatar">{{ g.user.name[0] | upper }}</div><div class="account-details"><strong>{{ g.user.name }}</strong><span>{{ g.user.email }}</span></div><span class="account-status">Signed in</span></div>
+  <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><button class="button primary" type="submit">Log out <span aria-hidden="true">↗</span></button></form>
+  <div class="form-note"><span aria-hidden="true">◇</span> All settled in. It’s that simple.</div>
+  {% endif %}
+</div>
+{% endblock %}
