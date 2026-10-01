@@ -73,8 +73,8 @@ def create_app(test_config=None):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "same-origin"
         response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; style-src 'self'; "
-            "script-src 'self' https://easyeasy-be-staging.up.railway.app; "
+            "default-src 'self'; style-src 'self' 'unsafe-inline'; "
+            "script-src 'self' 'unsafe-inline' https://easyeasy-be-staging.up.railway.app; "
             "connect-src 'self' https://easyeasy-be-staging.up.railway.app; "
             "img-src 'self' data:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         )
