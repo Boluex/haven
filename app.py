@@ -10,6 +10,16 @@ from flask import Flask, abort, g, redirect, render_template, request, session, 
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
+PAYMENT_SCENARIOS = {
+    "success": ("Successful payment", "Your demo payment was successful."),
+    "declined": ("Card declined", "The simulated bank declined this payment."),
+    "insufficient_funds": ("Insufficient funds", "The simulated account has insufficient funds."),
+    "timeout": ("Gateway timeout", "The simulated gateway timed out before completing payment."),
+    "cancelled": ("Payment cancelled", "You cancelled this demo payment."),
+}
+DEMO_AMOUNT = "5,000.00"
+
+
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     Path(app.instance_path).mkdir(parents=True, exist_ok=True)
@@ -50,6 +60,11 @@ def create_app(test_config=None):
         database().execute(
             "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, "
             "name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL)"
+        )
+        database().execute(
+            "CREATE TABLE IF NOT EXISTS payments (reference TEXT PRIMARY KEY, "
+            "user_id INTEGER NOT NULL REFERENCES users(id), outcome TEXT NOT NULL, "
+            "amount TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"
         )
         database().commit()
 
@@ -149,6 +164,74 @@ def create_app(test_config=None):
     @login_required
     def success():
         return render_template("result.html", logged_out=False)
+
+    def payment_result_url(payment):
+        return url_for(
+            "payment_success" if payment["outcome"] == "success" else "payment_unsuccessful",
+            reference=payment["reference"],
+        )
+
+    @app.route("/checkout", methods=["GET", "POST"])
+    @login_required
+    def checkout():
+        if request.method == "POST":
+            reference = request.form.get("reference", "")
+            # Repeated submissions return the original result, even if the outcome changes.
+            payment = database().execute(
+                "SELECT * FROM payments WHERE reference = ? AND user_id = ?",
+                (reference, g.user["id"]),
+            ).fetchone()
+            if payment:
+                return redirect(payment_result_url(payment), code=303)
+            if not reference or not secrets.compare_digest(
+                reference, session.get("checkout_reference", "")
+            ):
+                abort(400, "This checkout expired. Open checkout again to start a new payment.")
+            action = request.form.get("action", "pay")
+            if action not in ("pay", "cancel"):
+                abort(400, "Choose a valid payment action.")
+            outcome = "cancelled" if action == "cancel" else request.form.get("scenario", "")
+            if outcome not in PAYMENT_SCENARIOS:
+                abort(400, "Choose a valid simulation outcome.")
+            database().execute(
+                "INSERT OR IGNORE INTO payments (reference, user_id, outcome, amount) VALUES (?, ?, ?, ?)",
+                (reference, g.user["id"], outcome, DEMO_AMOUNT),
+            )
+            database().commit()
+            session.pop("checkout_reference", None)
+            payment = database().execute(
+                "SELECT * FROM payments WHERE reference = ? AND user_id = ?",
+                (reference, g.user["id"]),
+            ).fetchone()
+            return redirect(payment_result_url(payment), code=303)
+        reference = session.setdefault("checkout_reference", "demo_" + secrets.token_hex(16))
+        return render_template(
+            "checkout.html", reference=reference, amount=DEMO_AMOUNT, scenarios=PAYMENT_SCENARIOS
+        )
+
+    def show_payment(reference, successful):
+        payment = database().execute(
+            "SELECT * FROM payments WHERE reference = ? AND user_id = ?",
+            (reference, g.user["id"]),
+        ).fetchone()
+        if payment is None:
+            abort(404)
+        if (payment["outcome"] == "success") != successful:
+            return redirect(payment_result_url(payment))
+        label, message = PAYMENT_SCENARIOS[payment["outcome"]]
+        return render_template(
+            "payment_result.html", payment=payment, successful=successful, label=label, message=message
+        )
+
+    @app.route("/payment/success/<reference>")
+    @login_required
+    def payment_success(reference):
+        return show_payment(reference, successful=True)
+
+    @app.route("/payment/unsuccessful/<reference>")
+    @login_required
+    def payment_unsuccessful(reference):
+        return show_payment(reference, successful=False)
 
     @app.route("/logout", methods=["POST"])
     @login_required

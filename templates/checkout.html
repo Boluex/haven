@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Demo checkout{% endblock %}
+{% block content %}
+<div class="form-heading">
+  <span class="kicker">HAVEN PAY · TEST MODE</span>
+  <h2>Give it a try.</h2>
+  <p>Simulate a payment from checkout to its final result.</p>
+</div>
+<div class="demo-notice">Demo only. No real money is charged and no card details are needed.</div>
+<dl class="payment-details">
+  <div><dt>Item</dt><dd>Haven demo purchase</dd></div>
+  <div><dt>Account</dt><dd>{{ g.user.email }}</dd></div>
+  <div class="payment-total"><dt>Total</dt><dd>NGN {{ amount }}</dd></div>
+</dl>
+<form method="post" class="auth-form" data-payment-form>
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+  <input type="hidden" name="reference" value="{{ reference }}">
+  <div class="field">
+    <label for="scenario">Payment outcome</label>
+    <select id="scenario" name="scenario" aria-describedby="scenario-hint">
+      {% for value, details in scenarios.items() if value != 'cancelled' %}
+      <option value="{{ value }}">{{ details[0] }}</option>
+      {% endfor %}
+    </select>
+    <small id="scenario-hint">Choose what the dummy gateway should return.</small>
+  </div>
+  <button class="button primary" type="submit" name="action" value="pay">Simulate payment · NGN {{ amount }} <span aria-hidden="true">↗</span></button>
+  <button class="button secondary" type="submit" name="action" value="cancel">Cancel payment <span aria-hidden="true">×</span></button>
+  <p class="payment-progress" role="status" hidden>Processing your simulated payment…</p>
+</form>
+<p class="switch-copy"><a href="{{ url_for('success') }}">Back to your account</a></p>
+{% endblock %}

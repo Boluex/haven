@@ -18,3 +18,13 @@ if (confirmation && password) {
   confirmation.addEventListener('input', validate);
   password.addEventListener('input', validate);
 }
+
+const paymentForm = document.querySelector('[data-payment-form]');
+if (paymentForm) {
+  paymentForm.addEventListener('submit', () => {
+    paymentForm.querySelector('[role="status"]').hidden = false;
+  });
+  window.addEventListener('pageshow', () => {
+    paymentForm.querySelector('[role="status"]').hidden = true;
+  });
+}

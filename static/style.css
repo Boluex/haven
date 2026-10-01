@@ -2,7 +2,7 @@
 *{box-sizing:border-box}
 body{margin:0}
 a{color:inherit}
-button,input{font:inherit}
+button,input,select{font:inherit}
 button,a,input{-webkit-tap-highlight-color:transparent}
 button,a{touch-action:manipulation}
 a:focus-visible,button:focus-visible{outline:3px solid #9baf65;outline-offset:5px}
@@ -75,3 +75,18 @@ small{font-size:10px;color:#7f8678;line-height:1.5}
 @media(max-width:1000px){.shell{grid-template-columns:43% 57%}.story{padding:30px 26px 24px}.main-panel{padding:29px 28px 15px}h1{font-size:53px}.sun{right:8px}.story-footer{font-size:9px}.story-footer span:last-child{display:none}.orbit-two{width:290px}.orbit-one{width:260px}h2{font-size:34px}}
 @media(max-width:700px){.shell{display:block;padding:10px}.story{min-height:auto;padding:22px 26px 27px;border-radius:11px}.brand{font-size:23px}.brand-icon{height:30px;width:30px;font-size:26px}.story-copy{margin-top:29px}.eyebrow{font-size:8px}h1{font-size:40px;letter-spacing:-1.5px;margin:15px 0 8px}h1 br{display:none}.story-copy p{font-size:12px;margin:0}.story-copy p br{display:none}.art,.story-footer{display:none}.main-panel{padding:25px 20px 12px;min-height:calc(100svh - 245px)}.topbar{font-size:8px}.content{padding:35px 0 42px}.tabs{margin-bottom:28px}.form-heading{margin-bottom:25px}h2{font-size:34px}.result h2{font-size:42px}.page-footer{font-size:8px}.form-note{margin-top:28px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.secondary{background:transparent;color:var(--green);border:1px solid var(--line);margin-top:12px}
+.secondary:hover{background:#e9eddf}
+.demo-notice{background:#edf1e2;border:1px solid #d7dfc7;border-radius:7px;padding:13px;font-size:12px;line-height:1.6;margin:22px 0}
+.payment-details{margin:24px 0;font-size:12px}
+.payment-details>div{display:flex;justify-content:space-between;gap:18px;padding:13px 0;border-bottom:1px solid var(--line)}
+.payment-details dt{color:#687460;flex-shrink:0}
+.payment-details dd{margin:0;text-align:right;overflow-wrap:anywhere;min-width:0}
+.payment-total{font-weight:600;font-size:15px}
+.payment-reference{font-family:monospace;font-size:11px}
+.field select{width:100%;padding:15px 12px;border:1px solid #dce0d5;border-radius:7px;background:#fffefa;color:#203b32;font-size:13px}
+.field select:focus-visible{outline:3px solid #9baf65;outline-offset:2px}
+.failure-icon{background:#f8e9df;color:#8e3e2f;border-color:#ebd2c4}
+.auth-form .secondary{margin-top:0}
+.result>.secondary{margin-top:12px}
+.payment-progress{font-size:12px;color:#496642;margin:0}

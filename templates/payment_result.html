@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Payment {{ 'successful' if successful else 'unsuccessful' }}{% endblock %}
+{% block content %}
+<div class="result">
+  <div class="success-icon {{ 'failure-icon' if not successful }}" aria-hidden="true">{{ '✓' if successful else '×' }}</div>
+  <span class="kicker">HAVEN PAY · TEST MODE</span>
+  <h2>Payment {{ 'successful' if successful else 'unsuccessful' }}.</h2>
+  <p>{{ message }}</p>
+  <div class="demo-notice">This was a simulation. No real money was charged.</div>
+  <dl class="payment-details">
+    <div><dt>Status</dt><dd>{{ label }}</dd></div>
+    <div><dt>Amount</dt><dd>NGN {{ payment.amount }}</dd></div>
+    <div><dt>Reference</dt><dd class="payment-reference">{{ payment.reference }}</dd></div>
+    <div><dt>Date (UTC)</dt><dd>{{ payment.created_at }}</dd></div>
+  </dl>
+  <a class="button primary" href="{{ url_for('checkout') }}">{{ 'Make another demo payment' if successful else 'Try again' }} <span aria-hidden="true">↗</span></a>
+  <a class="button secondary" href="{{ url_for('success') }}">Back to your account <span aria-hidden="true">↗</span></a>
+  {% if successful %}
+  <script>
+    (function() {
+      function fireSale() {
+        if (window.EasyEasy && typeof window.EasyEasy.track === 'function') {
+          window.EasyEasy.track('sale', {
+            amount: {{ payment.amount }},
+            order_id: '{{ payment.reference }}'
+          });
+        } else {
+          setTimeout(fireSale, 100);
+        }
+      }
+      fireSale();
+    })();
+  </script>
+  {% endif %}
+</div>
+{% endblock %}

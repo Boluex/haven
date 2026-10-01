@@ -1,3 +1,4 @@
+from contextlib import closing
 import re
 import sqlite3
 import tempfile
@@ -39,7 +40,7 @@ class AuthTests(unittest.TestCase):
         self.assertIn("It worked!", page)
         self.assertIn("Your account is ready", page)
         self.assertIn("Alex Morgan", page)
-        with sqlite3.connect(self.db_path) as db:
+        with closing(sqlite3.connect(self.db_path)) as db:
             password_hash = db.execute("SELECT password_hash FROM users").fetchone()[0]
         self.assertNotEqual(password_hash, "a-good-password")
         response = self.logout()
@@ -66,7 +67,7 @@ class AuthTests(unittest.TestCase):
         for data in ({"name": ""}, {"email": "invalid"}, {"password": "short"}, {"confirm_password": "different"}):
             with self.subTest(data=data):
                 self.assertEqual(self.register(**data).status_code, 400)
-        with sqlite3.connect(self.db_path) as db:
+        with closing(sqlite3.connect(self.db_path)) as db:
             self.assertEqual(db.execute("SELECT COUNT(*) FROM users").fetchone()[0], 0)
 
     def test_csrf_and_logout_method(self):
